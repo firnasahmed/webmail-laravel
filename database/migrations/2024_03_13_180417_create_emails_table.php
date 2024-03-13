@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('recipient');
             $table->string('subject');
             $table->text('message');
-            $table->enum('status', ['sent', 'draft'])->default('draft');
-            $table->timestamp('sent_at')->nullable();
+            $table->enum('status', ['sent', 'error'])->default('sent');
             $table->timestamps();
         });
     }
