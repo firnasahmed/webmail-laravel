@@ -8,26 +8,38 @@ use App\Models\Email;
 use App\Mail\SendEmail;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class EmailController extends Controller
 {
     public function create(){
-            return view('new-email');
-        }
-
-    public function dashboard(){
-        $emails = Email::paginate(5);
-        return view('dashboard', compact('emails'));
+        return view('new-email');
     }
 
+    public function dashboard(){
+        $emails = Email::orderBy('created_at', 'desc')->paginate(10);
+        return view('dashboard', compact('emails'));
+    }
+    
     public function send(Request $request)
     {
         // Validate the form inputs
-        $request->validate([
-            'recipients' => 'required',
+        $validator = Validator::make($request->all(), [
+            'recipients' => ['required', function ($attribute, $value, $fail) {
+                $emails = explode(',', $value);
+                foreach ($emails as $email) {
+                    if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL)) {
+                        $fail('One or more email addresses are invalid.');
+                    }
+                }
+            }],
             'subject' => 'required',
             'message' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         // Split the recipient emails by comma
         $recipients = explode(',', $request->input('recipients'));
@@ -58,8 +70,7 @@ class EmailController extends Controller
             }
         }
 
-        // Redirect back with success message
-        return redirect()->back()->with('success', 'Email(s) sent successfully.');
+        // Redirect to dashboard upon successful email sending
+        return redirect()->route('dashboard')->with('success', 'Email(s) sent successfully.');
     }
-
 }

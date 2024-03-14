@@ -1,15 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
+            {{ __('All Sent Emails') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="p-6 text-gray-900 dark:text-gray-100">
-                <a href="{{ route('new-email.create') }}" class="btn btn-primary">Send New Email</a>
+
+            <div class="p-6">
+                <a href="{{ route('new-email.create') }}" style="display: inline-block; padding: 10px 20px; background-color: #04AA6D; color: #FFFFFF; border-radius: 8px;">
+                    Send New Email
+                </a>
             </div>
+            
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -20,7 +24,7 @@
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        ID
+                                        NO
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Date
@@ -40,10 +44,15 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800">
+                                  @php
+                                        $currentPage = $emails->currentPage();
+                                        $perPage = $emails->perPage();
+                                        $index = ($currentPage - 1) * $perPage + 1;
+                                    @endphp
                                 @foreach ($emails as $email)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ $email->id }}
+                                            {{ $index++ }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ $email->created_at }}
